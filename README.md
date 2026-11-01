@@ -31,6 +31,42 @@ Lyrics Reimagined // 辞曲新境
 
 </div>
 
+## 关于本仓库（Android 性能分支）
+
+这是 [whycfawa/folia-android](https://github.com/whycfawa/folia-android) 的派生分支，只做 Android 端的性能与体验修复，不改产品形态。当前版本 **0.7.26-android.286**。
+
+### 这个分支改了什么
+
+| 方向 | 改动 |
+|---|---|
+| 画布像素预算 | 可视化器 canvas 的绘制倍率钳在 2 以内（6.8MP 屏幕原本按 2.75 绘制） |
+| 内存 | 通知栏封面改 6 条 LRU + 长边 768px 采样解码（原图可达 3125²，约 39MB/张） |
+| 首页滑动 | 拖动/滚动时进入降级态：关掉整屏噪点、逐卡阴影与滤镜、工具的 backdrop-filter |
+| 滑行卡顿 | 松手滑行与滚轮平滑改走未节流的 rAF（原本被可视化器的帧率限制压到 30fps） |
+| 板块展开 | 安卓上不再逐帧补间海报宽高，消掉整墙重排 |
+| 烟花 | 增加帧耗时日志（每 240 帧输出 p50/p95），便于判断瓶颈在脚本还是合成 |
+| 播放栏 | 新增上一首 / 下一首按钮；控制栏常驻展开，不再收起成小胶囊 |
+
+### 安装说明
+
+- APK 使用仓库内的**测试签名**，与官方版签名不同：手机里如果已经装了原版 Folia，**需要先卸载再安装**
+- 包名与原版一致（top.izuna.foliamajor），数据目录相同
+
+### 构建
+
+与上游一致，CI 见 .github/workflows/android-apk.yml：
+
+```bash
+npm install
+npm run build:capacitor
+npx cap sync android
+cd android && ./gradlew assembleRelease
+```
+
+### 上游
+
+相关修复已整理成 PR 提交给上游：https://github.com/whycfawa/folia-android/pull/5
+
 ## 项目简介
 
 Folia是一个以全屏沉浸式歌词播放为核心的在线音乐播放器，支持网易云、酷狗、QQ 音乐、Navidrome 和本地音乐库，桌面端还支持波点音乐、YouTube Music、Spotify 和汽水音乐，通过智能歌词匹配，AI生成配色主题，以及多种全屏歌词动画为用户提供独特的听歌体验。
